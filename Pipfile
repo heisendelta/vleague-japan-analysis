@@ -9,6 +9,7 @@ bs4 = "*"
 pandas = "*"
 numpy = "*"
 networkx = "*"
+matplotlib = "*"
 
 [dev-packages]
 
