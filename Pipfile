@@ -10,6 +10,7 @@ pandas = "*"
 numpy = "*"
 networkx = "*"
 matplotlib = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
