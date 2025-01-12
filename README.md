@@ -161,7 +161,7 @@ Initially, my scores for **evenly-matched**-ness, calculated prior, are between 
   </tbody>
 </table>
 
-As expected, the cost is a large factor in these scores. All but one of these matches take place in Kanto, and looking at the `cost` column, it's pretty easy to see which one it is. Unfortunately, my favorite team, the Hokkaido Yellow Stars and my most anticipated game, their away game against Chiba (the closest venue to me), doesn't show up on this list to the apparent different in their evenly-matched-ness. This suggests some unreliability or inadequacy in my metric.
+As expected, the cost is a large factor in these scores. All but one of these matches take place in Kanto, and looking at the `cost` column, it's pretty easy to see which one that is. Unfortunately, my favorite team, the Hokkaido Yellow Stars and my most anticipated game, their away game against Chiba (the closest venue to me), doesn't show up on this list to the apparent different in their evenly-matched-ness. This suggests some unreliability or inadequacy in my metric.
 
 BUT, I did realize there are a series of matches between the teams FUIJITSU, GaRons, Sun GAIA, and R Tochigi in (fairly) affordably-distanced venues. For a simpler analysis, the following returns the matches happening the closest by, then sortest by their evely-matched-ness:
 ```python
@@ -172,3 +172,89 @@ match_with_venues.loc[
         .index
 ].drop(['latitude', 'longitude'], axis=1, errors='ignore')
 ```
+### Clustering
+
+Traveling from my home in Tokyo across the country and back in a single day is, without question, extremely exhausting. If I wanted to watch volleyball matches consecutively, I'd be better off traveling to another area, then watching matches over a period of time.
+
+Each venue has a latitude and longitude coordinate, and each match had a venue and time associated with it. We use [DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html) to cluster matches by time and venue, with `eps=0.5` and `metrics='euclidean'`. Additionally, we manually set a limit to the time parameters: specifically that all matches within a cluster must happen within the time frame of a 8 days. This method also does not consider matches that take place simultaenously (and includes them in the same cluster).
+
+While no limits for distance have been hardcoded, the venues contained in a single cluster can be traveled to and from without the need for the Shinkansen (high speed bullet train), but other limited express trains may be required.
+
+The following is the largest cluster not in Kanto. This cluster is mostly based in Kansai (with the exception of a match in the Mie prefecture).
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>date</th>
+      <th>home_team</th>
+      <th>away_team</th>
+      <th>venue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>16</th>
+      <td>2025-03-15 11:00:00</td>
+      <td>VEERTIEN</td>
+      <td>FKAGOSHIMA</td>
+      <td>亀山市西野公園体育館</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>2025-03-15 12:00:00</td>
+      <td>NARA</td>
+      <td>HYOGO Delfino</td>
+      <td>西部生涯スポーツセンター</td>
+    </tr>
+    <tr>
+      <th>52</th>
+      <td>2025-03-15 14:00:00</td>
+      <td>AISIN</td>
+      <td>Kinki</td>
+      <td>碧南市臨海体育館</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>2025-03-15 14:00:00</td>
+      <td>Daido</td>
+      <td>Kinden</td>
+      <td>メディアス体育館ちた</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2025-03-16 10:00:00</td>
+      <td>VEERTIEN</td>
+      <td>FKAGOSHIMA</td>
+      <td>亀山市西野公園体育館</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>2025-03-16 12:00:00</td>
+      <td>NARA</td>
+      <td>HYOGO Delfino</td>
+      <td>西部生涯スポーツセンター</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>2025-03-16 13:00:00</td>
+      <td>AISIN</td>
+      <td>Kinki</td>
+      <td>碧南市臨海体育館</td>
+    </tr>
+    <tr>
+      <th>94</th>
+      <td>2025-03-16 13:00:00</td>
+      <td>Daido</td>
+      <td>Kinden</td>
+      <td>メディアス体育館ちた</td>
+    </tr>
+    <tr>
+      <th>75</th>
+      <td>2025-03-22 14:00:00</td>
+      <td>Daido</td>
+      <td>FUKUOKA WS</td>
+      <td>弥富市総合社会教育センター</td>
+    </tr>
+  </tbody>
+</table>
+
